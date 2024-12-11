@@ -1,0 +1,62 @@
+plugins {
+    id("org.springframework.boot") version "3.4.0"
+    id("io.spring.dependency-management") version "1.1.6"
+    id("com.diffplug.spotless") version "6.22.0"
+    id("nu.studer.jooq") version "9.0"
+    id("java")
+    id("project-report")
+    id("jacoco")
+    id("com.github.spotbugs") version "6.0.26"
+    id("idea")
+    id("eclipse")
+}
+
+group = 'com.example.batch'
+version = '0.0.1-SNAPSHOT'
+description = 'SpringBatchSkeleton'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+}
+
+// Spring Bootプラグインが管理するライブラリに対してバージョン番号を明示的に指定しない。
+// Do not explicitly specify version numbers for libraries managed by the Spring Boot plugin.
+// https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    runtimeOnly 'com.h2database:h2'
+    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// https://github.com/diffplug/spotless
+spotless {
+    java {
+        googleJavaFormat()
+        target 'src/**/*.java'
+    }
+}
+
+spotbugs {
+    ignoreFailures = true
+}
+
+jar {
+    archiveBaseName = 'batch-skeleton'
+    archiveVersion = '0.0.1'
+    enabled = true
+}
+
+defaultTasks 'tasks', 'spotlessApply', 'clean', 'check', 'jacocoTestReport', 'projectReport', 'bootJar'
